@@ -1,7 +1,7 @@
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
+  <div class="scope-viewer">
     <!-- Streaming Progress -->
-    <div v-if="discoveryStore.isStreaming" class="bg-white rounded-lg shadow-lg p-6">
+    <div v-if="discoveryStore.isStreaming" class="scope-card">
       <h3 class="text-xl font-bold mb-4 text-gray-800">Generating Scope Document</h3>
       
       <!-- Current Phase -->
@@ -22,9 +22,9 @@
 
     <!-- Progressive Results During Streaming -->
     <div v-if="discoveryStore.isStreaming || (!discoveryStore.isStreaming && !discoveryStore.scopeDocument)" class="space-y-6">
-      
+
       <!-- Complexity Analysis -->
-      <div v-if="isPhaseInProgress('classify') || isPhaseCompleted('classify')" class="bg-white rounded-lg shadow-lg p-6">
+      <div v-if="isPhaseInProgress('classify') || isPhaseCompleted('classify')" class="scope-card">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-xl font-bold text-gray-800">Complexity Assessment</h3>
           <span v-if="isPhaseCompleted('classify')" class="text-green-500 text-sm font-medium">✓ Completed</span>
@@ -47,7 +47,7 @@
       </div>
 
       <!-- Risk Analysis -->
-      <div v-if="isPhaseInProgress('analyze_risks') || isPhaseCompleted('analyze_risks')" class="bg-white rounded-lg shadow-lg p-6">
+      <div v-if="isPhaseInProgress('analyze_risks') || isPhaseCompleted('analyze_risks')" class="scope-card">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-xl font-bold text-gray-800">Risk Analysis</h3>
           <span v-if="isPhaseCompleted('analyze_risks')" class="text-green-500 text-sm font-medium">✓ Completed</span>
@@ -87,7 +87,7 @@
       </div>
 
       <!-- Scope Generation -->
-      <div v-if="isPhaseInProgress('generate_scope')" class="bg-white rounded-lg shadow-lg p-6">
+      <div v-if="isPhaseInProgress('generate_scope')" class="scope-card">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-xl font-bold text-gray-800">Generating Scope Document</h3>
         </div>
@@ -101,13 +101,13 @@
     </div>
 
     <!-- Error State -->
-    <div v-if="discoveryStore.error" class="bg-red-50 border border-red-200 rounded-lg p-6">
+    <div v-if="discoveryStore.error" class="error-card">
       <h3 class="text-lg font-bold text-red-800 mb-2">Error</h3>
       <p class="text-red-700">{{ discoveryStore.error }}</p>
     </div>
 
     <!-- Final Scope Document -->
-    <div v-if="discoveryStore.scopeDocument && !discoveryStore.isStreaming" class="bg-white rounded-lg shadow-lg p-6">
+    <div v-if="discoveryStore.scopeDocument && !discoveryStore.isStreaming" class="scope-card">
       <h3 class="text-2xl font-bold mb-6 text-gray-800">Project Scope Document</h3>
       
       <!-- Complexity Analysis -->
@@ -293,3 +293,74 @@ function formatPhase(phase: string) {
   }
 }
 </script>
+
+<style scoped>
+.scope-viewer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.scope-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: var(--space-6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.error-card {
+  background: rgba(255, 107, 107, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: var(--space-6);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+/* Override all the tailwind text colors for dark theme */
+:deep(h3), :deep(.text-xl), :deep(.text-2xl) {
+  color: #ffffff !important;
+}
+
+:deep(p), :deep(span), :deep(li) {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+:deep(.text-gray-500), :deep(.text-gray-600), :deep(.text-gray-700), :deep(.text-gray-800) {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+:deep(.text-blue-700), :deep(.text-blue-900) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.text-green-700), :deep(.text-green-800), :deep(.text-green-900) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.text-red-900) {
+  color: rgba(255, 200, 200, 0.9) !important;
+}
+
+:deep(.bg-blue-50), :deep(.bg-green-50), :deep(.bg-red-50), :deep(.bg-gray-50), :deep(.bg-gray-100) {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 12px;
+}
+
+:deep(.border), :deep(.border-gray-200) {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.bg-white) {
+  background: transparent !important;
+}
+
+:deep(.shadow-lg) {
+  box-shadow: none !important;
+}
+</style>

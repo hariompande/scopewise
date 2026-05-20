@@ -53,31 +53,25 @@ withDefaults(defineProps<Props>(), {
   font-family: var(--font-body);
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.9);
   display: block;
   margin-bottom: var(--space-1);
 }
 
 .form-section__required {
-  color: var(--color-error-500);
+  color: #ff6b6b;
   margin-left: 2px;
 }
 
 .form-section__helper {
   font-family: var(--font-body);
   font-size: var(--font-size-body-xs);
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
   line-height: var(--line-height-normal);
 }
 
 .form-section__content {
   position: relative;
-}
-
-@media (prefers-color-scheme: dark) {
-  .form-section__required {
-    color: var(--color-error-400);
-  }
 }
 </style>

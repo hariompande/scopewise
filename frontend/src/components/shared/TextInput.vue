@@ -89,71 +89,54 @@ const inputId = computed(() => props.id || props.name)
   font-family: var(--font-body);
   font-size: var(--font-size-body-md);
   line-height: var(--line-height-normal);
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  transition: all 0.3s ease;
   outline: none;
+  backdrop-filter: blur(10px);
 }
 
 .text-input__field::placeholder {
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .text-input__field:hover:not(:disabled) {
-  border-color: var(--border-secondary);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .text-input__field:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: var(--shadow-focus);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
 
 .text-input__field--error {
-  border-color: var(--color-error-500);
+  border-color: rgba(255, 107, 107, 0.5);
 }
 
 .text-input__field--error:focus {
-  border-color: var(--color-error-500);
-  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-error-500);
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 
 .text-input__field:disabled {
-  background: var(--bg-secondary);
-  color: var(--text-tertiary);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.3);
   cursor: not-allowed;
 }
 
 .text-input__field:readonly {
-  background: var(--bg-secondary);
+  background: rgba(0, 0, 0, 0.2);
   cursor: default;
 }
 
 .text-input__error {
   font-family: var(--font-body);
   font-size: var(--font-size-body-xs);
-  color: var(--color-error-500);
+  color: #ff6b6b;
   margin: var(--space-2) 0 0 0;
   line-height: var(--line-height-normal);
-}
-
-@media (prefers-color-scheme: dark) {
-  .text-input__field {
-    border-color: var(--border-primary);
-  }
-
-  .text-input__field--error {
-    border-color: var(--color-error-400);
-  }
-
-  .text-input__field--error:focus {
-    border-color: var(--color-error-400);
-    box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-error-400);
-  }
-
-  .text-input__error {
-    color: var(--color-error-400);
-  }
 }
 </style>

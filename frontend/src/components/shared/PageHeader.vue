@@ -40,8 +40,6 @@ withDefaults(defineProps<Props>(), {
   justify-content: space-between;
   gap: var(--space-6);
   margin-bottom: var(--space-8);
-  padding-bottom: var(--space-6);
-  border-bottom: 1px solid var(--border-primary);
 }
 
 .page-header__content {
@@ -52,15 +50,16 @@ withDefaults(defineProps<Props>(), {
   font-family: var(--font-heading);
   font-size: var(--font-size-heading-2xl);
   font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
+  color: #ffffff;
   line-height: var(--line-height-tight);
   margin: 0 0 var(--space-2) 0;
+  letter-spacing: -0.02em;
 }
 
 .page-header__subtitle {
   font-family: var(--font-body);
   font-size: var(--font-size-body-lg);
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
   line-height: var(--line-height-normal);
 }
