@@ -261,6 +261,14 @@ class AgentService:
                     db_session.add(node_output)
                     db_session.commit()
 
+                    # Emit the phase result so the frontend can display it progressively
+                    if step_output:
+                        yield {
+                            "type": "phase_result",
+                            "phase": name,
+                            "output": step_output.model_dump(),
+                        }
+
                     yield {"type": "phase_complete", "phase": name}
 
                     # Advance to the next step if one exists.
@@ -287,8 +295,12 @@ class AgentService:
                     if not isinstance(final_state, dict):
                         continue
 
-                    gen = final_state["generate_scope"]  # GenerateScopeOutput
-                    cls_out = final_state["classify"]    # ClassifyOutput
+                    gen = final_state.get("generate_scope")  # GenerateScopeOutput | None
+                    cls_out = final_state.get("classify")    # ClassifyOutput | None
+                    risks_out = final_state.get("analyze_risks")  # RisksOutput | None
+
+                    if not gen or not cls_out:
+                        raise RuntimeError("Pipeline completed but missing required outputs")
 
                     scope_doc = ScopeDocument(
                         request_id=scope_request.id,
@@ -330,6 +342,7 @@ class AgentService:
                             "tech_stack": scope_doc.tech_stack,
                             "timeline_breakdown": scope_doc.timeline_breakdown,
                             "risks": scope_doc.risks,
+                            "mitigations": risks_out.mitigations if risks_out else {},
                             "out_of_scope": scope_doc.out_of_scope,
                             "created_at": scope_doc.created_at.isoformat(),
                         },

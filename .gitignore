@@ -22,4 +22,61 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Makefile (local dev runner)
 Makefile
+
+# ──────────────────────────────────────────────
+# Frontend (Vue / Vite / TypeScript)
+# ──────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.cache/
+frontend/.vite/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
+frontend/.oxlintrc.json.cache
+
+# ──────────────────────────────────────────────
+# Backend (Laravel / PHP / Composer)
+# ──────────────────────────────────────────────
+backend/vendor/
+backend/node_modules/
+backend/public/hot
+backend/public/build/
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/testing/
+backend/storage/framework/views/
+backend/storage/logs/
+backend/bootstrap/cache/
+backend/.phpunit.cache/
+backend/.phpunit.result.cache
+backend/database/*.sqlite
+backend/database/*.sqlite-shm
+backend/database/*.sqlite-wal
+backend/_ide_helper.php
+backend/_ide_helper_models.php
+backend/.php-cs-fixer.cache
+backend/.php_cs.cache
+
+# ──────────────────────────────────────────────
+# AI service (Python / uv)
+# ──────────────────────────────────────────────
+ai/.venv/
+ai/__pycache__/
+ai/**/__pycache__/
+ai/**/*.pyc
+ai/**/*.pyo
+ai/.mypy_cache/
+ai/.ruff_cache/
+ai/.pytest_cache/
+ai/htmlcov/
+ai/coverage/
+ai/.coverage
+ai/.coverage.*
+ai/dist/
+ai/build/
+ai/*.egg-info/

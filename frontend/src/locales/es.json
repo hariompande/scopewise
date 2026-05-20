@@ -1,0 +1,77 @@
+{
+  "app": {
+    "title": "ScopeWise",
+    "subtitle": "Herramienta de alcance de proyecto con IA"
+  },
+  "discovery": {
+    "title": "Formulario de descubrimiento del proyecto",
+    "projectType": {
+      "label": "Tipo de proyecto",
+      "placeholder": "Selecciona el tipo de proyecto",
+      "options": {
+        "webApplication": "Aplicacion web",
+        "mobileApp": "Aplicacion movil",
+        "ecommerce": "Plataforma de comercio electronico",
+        "saas": "Producto SaaS",
+        "apiIntegration": "Integracion de API",
+        "dataAnalytics": "Plataforma de analitica de datos",
+        "customSoftware": "Software a medida",
+        "other": "Otro"
+      }
+    },
+    "budget": {
+      "label": "Rango de presupuesto",
+      "options": {
+        "under10k": "Menos de $10,000",
+        "tenToTwentyFive": "$10,000 - $25,000",
+        "twentyFiveToFifty": "$25,000 - $50,000",
+        "fiftyToHundred": "$50,000 - $100,000",
+        "hundredToTwoFifty": "$100,000 - $250,000",
+        "twoFiftyPlus": "$250,000+"
+      }
+    },
+    "timeline": {
+      "label": "Cronograma",
+      "placeholder": "Selecciona el cronograma",
+      "options": {
+        "oneToTwo": "1-2 meses",
+        "threeToFour": "3-4 meses",
+        "fiveToSix": "5-6 meses",
+        "sixToTwelve": "6-12 meses",
+        "twelvePlus": "12+ meses"
+      }
+    },
+    "features": {
+      "label": "Funciones clave",
+      "placeholder": "Agrega una funcion (presiona Enter)",
+      "addButton": "Agregar",
+      "error": "Agrega al menos una funcion"
+    },
+    "targetAudience": {
+      "label": "Publico objetivo",
+      "placeholder": "Describe a tus usuarios objetivo y sus necesidades"
+    },
+    "technicalRequirements": {
+      "label": "Requisitos tecnicos",
+      "placeholder": "Cualquier requisito o preferencia tecnica"
+    },
+    "businessGoals": {
+      "label": "Objetivos de negocio",
+      "placeholder": "Cuales son los objetivos principales del proyecto?"
+    },
+    "constraints": {
+      "label": "Restricciones",
+      "placeholder": "Cualquier limitacion, requisito de cumplimiento o restriccion"
+    },
+    "additionalNotes": {
+      "label": "Notas adicionales",
+      "placeholder": "Cualquier otra informacion que pueda ser util"
+    },
+    "actions": {
+      "submit": "Generar alcance",
+      "submitting": "Enviando...",
+      "processing": "Procesando...",
+      "reset": "Restablecer"
+    }
+  }
+}

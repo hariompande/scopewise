@@ -1,0 +1,395 @@
+/**
+ * ScopeAI Design System - Design Tokens
+ * Enterprise/Corporate aesthetic - Neutral, Professional
+ * Refined utilitarian: Precision over decoration
+ */
+
+/* ============================================
+   COLOR PALETTE
+   ============================================ */
+
+:root {
+  /* Primary Colors - Professional Navy Blue */
+  --color-primary-50: #f0f4f8;
+  --color-primary-100: #d9e2ec;
+  --color-primary-200: #bcccdc;
+  --color-primary-300: #9fb3c8;
+  --color-primary-400: #829ab1;
+  --color-primary-500: #486581; /* Primary brand color */
+  --color-primary-600: #334e68;
+  --color-primary-700: #243b53;
+  --color-primary-800: #102a43;
+  --color-primary-900: #102a43;
+
+  /* Neutral Grays - Professional scale */
+  --color-gray-50: #f7f9fc;
+  --color-gray-100: #edf2f7;
+  --color-gray-200: #e3e8ee;
+  --color-gray-300: #cfd7e0;
+  --color-gray-400: #9aa3b2;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Semantic Colors - Success */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-300: #6ee7b7;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+  --color-success-900: #064e3b;
+
+  /* Semantic Colors - Warning */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* Semantic Colors - Error */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+
+  /* Semantic Colors - Info */
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-200: #bfdbfe;
+  --color-info-300: #93c5fd;
+  --color-info-400: #60a5fa;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+  --color-info-800: #1e40af;
+  --color-info-900: #1e3a8a;
+
+  /* Light Theme Backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f9fc;
+  --bg-tertiary: #edf2f7;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(15, 23, 42, 0.5);
+
+  /* Light Theme Text */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-inverse: #ffffff;
+
+  /* Light Theme Borders */
+  --border-primary: #e3e8ee;
+  --border-secondary: #cfd7e0;
+  --border-focus: #486581;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Backgrounds */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-elevated: #1e293b;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Dark Theme Text */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #0f172a;
+
+  /* Dark Theme Borders */
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --border-focus: #829ab1;
+}
+
+/* ============================================
+   TYPOGRAPHY SCALE
+   ============================================ */
+
+:root {
+  /* Font Families - Premium Google Fonts combination */
+  /* Plus Jakarta Sans: Modern geometric sans, commissioned by Google */
+  /* - More distinctive than Inter, exceptional legibility, premium SaaS feel */
+  /* Syne: Bold architectural sans, European avant-garde aesthetic */
+  /* - Strong brand presence, distinctive headings, authoritative B2B positioning */
+  /* JetBrains Mono: Purpose-built for code, excellent readability */
+  --font-display: 'Plus Jakarta Sans', 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Syne', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', 'Inter', 'SF Pro Text', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Font Sizes - Display */
+  --font-size-display-xs: 2.5rem; /* 40px */
+  --font-size-display-sm: 3rem; /* 48px */
+  --font-size-display-md: 3.75rem; /* 60px */
+  --font-size-display-lg: 4.5rem; /* 72px */
+  --font-size-display-xl: 6rem; /* 96px */
+
+  /* Font Sizes - Heading */
+  --font-size-heading-xs: 0.875rem; /* 14px */
+  --font-size-heading-sm: 1rem; /* 16px */
+  --font-size-heading-md: 1.25rem; /* 20px */
+  --font-size-heading-lg: 1.5rem; /* 24px */
+  --font-size-heading-xl: 1.875rem; /* 30px */
+  --font-size-heading-2xl: 2.25rem; /* 36px */
+  --font-size-heading-3xl: 3rem; /* 48px */
+
+  /* Font Sizes - Body */
+  --font-size-body-xs: 0.75rem; /* 12px */
+  --font-size-body-sm: 0.875rem; /* 14px */
+  --font-size-body-md: 1rem; /* 16px */
+  --font-size-body-lg: 1.125rem; /* 18px */
+  --font-size-body-xl: 1.25rem; /* 20px */
+
+  /* Font Sizes - Mono */
+  --font-size-mono-xs: 0.75rem; /* 12px */
+  --font-size-mono-sm: 0.875rem; /* 14px */
+  --font-size-mono-md: 1rem; /* 16px */
+  --font-size-mono-lg: 1.125rem; /* 18px */
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  --line-height-loose: 2;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+}
+
+/* ============================================
+   SPACING SCALE
+   4px base grid
+   ============================================ */
+
+:root {
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+  --space-32: 8rem; /* 128px */
+
+  /* T-shirt sizes */
+  --spacing-xs: var(--space-2);
+  --spacing-sm: var(--space-4);
+  --spacing-md: var(--space-6);
+  --spacing-lg: var(--space-8);
+  --spacing-xl: var(--space-12);
+  --spacing-2xl: var(--space-16);
+}
+
+/* ============================================
+   BORDER RADIUS
+   Conservative - max 6px for cards, 4px for inputs
+   ============================================ */
+
+:root {
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px; /* Inputs, buttons */
+  --radius-lg: 6px; /* Cards */
+  --radius-full: 9999px; /* Avatars, badges */
+}
+
+/* ============================================
+   SHADOW LEVELS
+   Subtle elevation only - 3 levels max
+   ============================================ */
+
+:root {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-focus: 0 0 0 3px rgba(72, 101, 129, 0.3);
+}
+
+[data-theme="dark"] {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --shadow-focus: 0 0 0 3px rgba(130, 154, 177, 0.4);
+}
+
+/* ============================================
+   TRANSITION TIMING
+   2-3 standard easing curves
+   ============================================ */
+
+:root {
+  /* Duration */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+
+  /* Easing */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Standard transitions */
+  --transition-fast: var(--duration-fast) var(--ease-out);
+  --transition-normal: var(--duration-normal) var(--ease-in-out);
+  --transition-slow: var(--duration-slow) var(--ease-in-out);
+}
+
+/* ============================================
+   Z-INDEX SCALE
+   ============================================ */
+
+:root {
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}
+
+/* ============================================
+   LAYOUT SPECS
+   ============================================ */
+
+:root {
+  /* Max content widths */
+  --max-content-width: 1280px;
+  --max-form-width: 640px;
+  --max-narrow-width: 768px;
+
+  /* Sidebar */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 64px;
+
+  /* Top bar */
+  --topbar-height: 56px;
+
+  /* Grid */
+  --grid-columns: 12;
+  --grid-gutter: var(--space-8);
+
+  /* Scope review layout */
+  --scope-sections-width: 65%;
+  --pricing-panel-width: 35%;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   Focus ring style
+   ============================================ */
+
+:root {
+  --focus-ring: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-primary-500);
+  --focus-ring-inset: inset 0 0 0 2px var(--bg-primary), inset 0 0 0 4px var(--color-primary-500);
+}
+
+/* ============================================
+   SEMANTIC MAPPINGS
+   ============================================ */
+
+:root {
+  /* Status colors */
+  --status-new-bg: var(--color-info-50);
+  --status-new-text: var(--color-info-700);
+  --status-new-border: var(--color-info-200);
+
+  --status-review-bg: var(--color-warning-50);
+  --status-review-text: var(--color-warning-700);
+  --status-review-border: var(--color-warning-200);
+
+  --status-approved-bg: var(--color-success-50);
+  --status-approved-text: var(--color-success-700);
+  --status-approved-border: var(--color-success-200);
+
+  --status-sent-bg: var(--color-primary-50);
+  --status-sent-text: var(--color-primary-700);
+  --status-sent-border: var(--color-primary-200);
+
+  /* Risk levels */
+  --risk-low-bg: var(--color-success-50);
+  --risk-low-text: var(--color-success-700);
+  --risk-low-border: var(--color-success-200);
+
+  --risk-medium-bg: var(--color-warning-50);
+  --risk-medium-text: var(--color-warning-700);
+  --risk-medium-border: var(--color-warning-200);
+
+  --risk-high-bg: var(--color-error-50);
+  --risk-high-text: var(--color-error-700);
+  --risk-high-border: var(--color-error-200);
+}
+
+[data-theme="dark"] {
+  /* Status colors - dark theme */
+  --status-new-bg: rgba(59, 130, 246, 0.2);
+  --status-new-text: var(--color-info-300);
+  --status-new-border: rgba(59, 130, 246, 0.3);
+
+  --status-review-bg: rgba(245, 158, 11, 0.2);
+  --status-review-text: var(--color-warning-300);
+  --status-review-border: rgba(245, 158, 11, 0.3);
+
+  --status-approved-bg: rgba(16, 185, 129, 0.2);
+  --status-approved-text: var(--color-success-300);
+  --status-approved-border: rgba(16, 185, 129, 0.3);
+
+  --status-sent-bg: rgba(72, 101, 129, 0.2);
+  --status-sent-text: var(--color-primary-300);
+  --status-sent-border: rgba(72, 101, 129, 0.3);
+
+  /* Risk levels - dark theme */
+  --risk-low-bg: rgba(16, 185, 129, 0.2);
+  --risk-low-text: var(--color-success-300);
+  --risk-low-border: rgba(16, 185, 129, 0.3);
+
+  --risk-medium-bg: rgba(245, 158, 11, 0.2);
+  --risk-medium-text: var(--color-warning-300);
+  --risk-medium-border: rgba(245, 158, 11, 0.3);
+
+  --risk-high-bg: rgba(239, 68, 68, 0.2);
+  --risk-high-text: var(--color-error-300);
+  --risk-high-border: rgba(239, 68, 68, 0.3);
+}

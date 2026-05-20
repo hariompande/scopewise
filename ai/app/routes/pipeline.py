@@ -130,6 +130,7 @@ class PipelineRunResponse(BaseModel):
     tech_stack: dict[str, str]
     timeline_breakdown: list[dict[str, str]]
     risks: list[str]
+    mitigations: dict[str, str]
     out_of_scope: list[str]
 
     created_at: datetime
@@ -311,6 +312,10 @@ async def run_pipeline_stream(
         except PromptValidationError as exc:
             # Misconfiguration (e.g. warmup not called) — emit error frame and close.
             yield f"data: {json.dumps({'type': 'error', 'message': str(exc)})}\n\n"
+        except Exception as exc:
+            # Catch-all for unexpected errors — emit error frame and close.
+            logger.exception("Unexpected error in pipeline stream")
+            yield f"data: {json.dumps({'type': 'error', 'message': f'Internal error: {exc}'})}\n\n"
         finally:
             # Always close the DB session, even if the client disconnects early.
             db_session.close()

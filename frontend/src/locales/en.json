@@ -1,0 +1,77 @@
+{
+  "app": {
+    "title": "ScopeWise",
+    "subtitle": "AI-Powered Project Scoping Tool"
+  },
+  "discovery": {
+    "title": "Project Discovery Form",
+    "projectType": {
+      "label": "Project Type",
+      "placeholder": "Select project type",
+      "options": {
+        "webApplication": "Web Application",
+        "mobileApp": "Mobile Application",
+        "ecommerce": "E-commerce Platform",
+        "saas": "SaaS Product",
+        "apiIntegration": "API Integration",
+        "dataAnalytics": "Data Analytics Platform",
+        "customSoftware": "Custom Software",
+        "other": "Other"
+      }
+    },
+    "budget": {
+      "label": "Budget Range",
+      "options": {
+        "under10k": "Less than $10,000",
+        "tenToTwentyFive": "$10,000 - $25,000",
+        "twentyFiveToFifty": "$25,000 - $50,000",
+        "fiftyToHundred": "$50,000 - $100,000",
+        "hundredToTwoFifty": "$100,000 - $250,000",
+        "twoFiftyPlus": "$250,000+"
+      }
+    },
+    "timeline": {
+      "label": "Timeline",
+      "placeholder": "Select timeline",
+      "options": {
+        "oneToTwo": "1-2 months",
+        "threeToFour": "3-4 months",
+        "fiveToSix": "5-6 months",
+        "sixToTwelve": "6-12 months",
+        "twelvePlus": "12+ months"
+      }
+    },
+    "features": {
+      "label": "Key Features",
+      "placeholder": "Add a feature (press Enter)",
+      "addButton": "Add",
+      "error": "Add at least one feature"
+    },
+    "targetAudience": {
+      "label": "Target Audience",
+      "placeholder": "Describe your target users and their needs"
+    },
+    "technicalRequirements": {
+      "label": "Technical Requirements",
+      "placeholder": "Any specific technical requirements or preferences"
+    },
+    "businessGoals": {
+      "label": "Business Goals",
+      "placeholder": "What are the primary business objectives for this project?"
+    },
+    "constraints": {
+      "label": "Constraints",
+      "placeholder": "Any limitations, compliance requirements, or constraints"
+    },
+    "additionalNotes": {
+      "label": "Additional Notes",
+      "placeholder": "Any other information that might be helpful"
+    },
+    "actions": {
+      "submit": "Generate Scope",
+      "submitting": "Submitting...",
+      "processing": "Processing...",
+      "reset": "Reset"
+    }
+  }
+}
