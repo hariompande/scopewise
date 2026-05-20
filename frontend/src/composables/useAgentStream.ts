@@ -49,7 +49,7 @@ export function useAgentStream() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'text/event-stream',
+        Accept: 'text/event-stream',
       },
       body: JSON.stringify({ user_input: userInput }),
     })
@@ -67,6 +67,8 @@ export function useAgentStream() {
 
         isConnected.value = true
 
+        let buffer = ''
+
         function readStream(): Promise<void> {
           return reader!.read().then(({ done, value }) => {
             if (done) {
@@ -75,15 +77,19 @@ export function useAgentStream() {
               return
             }
 
-            const chunk = decoder.decode(value, { stream: true })
-            const lines = chunk.split('\n')
+            buffer += decoder.decode(value, { stream: true })
+            const lines = buffer.split('\n')
+            // Keep the last (potentially incomplete) line in the buffer
+            buffer = lines.pop() ?? ''
 
             for (const line of lines) {
               if (line.startsWith('data: ')) {
                 try {
-                  const jsonStr = line.substring(6)
-                  const event: StreamEvent = JSON.parse(jsonStr)
-                  handleEvent(event)
+                  const jsonStr = line.substring(6).trim()
+                  if (jsonStr) {
+                    const event: StreamEvent = JSON.parse(jsonStr)
+                    handleEvent(event)
+                  }
                 } catch (e) {
                   console.error('Failed to parse SSE event:', e)
                 }
@@ -96,9 +102,9 @@ export function useAgentStream() {
 
         return readStream()
       })
-      .catch((error) => {
-        console.error('Stream error:', error)
-        error.value = error.message
+      .catch((err: Error) => {
+        console.error('Stream error:', err)
+        error.value = err.message
         isStreaming.value = false
         isConnected.value = false
       })
