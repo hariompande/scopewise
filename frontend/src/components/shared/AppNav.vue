@@ -19,7 +19,7 @@ const { t } = useI18n()
 
 .app-title {
   font-family: var(--font-heading);
-  font-size: var(--font-size-heading-3xl);
+  font-size: var(--font-size-heading-xl);
   font-weight: var(--font-weight-bold);
   color: #ffffff;
   text-transform: uppercase;

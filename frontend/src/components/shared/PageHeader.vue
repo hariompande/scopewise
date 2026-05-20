@@ -48,7 +48,7 @@ withDefaults(defineProps<Props>(), {
 
 .page-header__title {
   font-family: var(--font-heading);
-  font-size: var(--font-size-heading-2xl);
+  font-size: var(--font-size-heading-lg);
   font-weight: var(--font-weight-semibold);
   color: #ffffff;
   line-height: var(--line-height-tight);

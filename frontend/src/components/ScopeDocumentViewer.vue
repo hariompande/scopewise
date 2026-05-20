@@ -1,102 +1,125 @@
 <template>
   <div class="scope-viewer">
-    <!-- Streaming Progress -->
-    <div v-if="discoveryStore.isStreaming" class="scope-card">
-      <h3 class="text-xl font-bold mb-4 text-gray-800">Generating Scope Document</h3>
-      
-      <!-- Current Phase -->
-      <div v-if="discoveryStore.currentPhase" class="mb-4">
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-          <span class="text-sm font-medium text-gray-700">
-            {{ formatPhase(discoveryStore.currentPhase) }}
-          </span>
+    <!-- Streaming Document UI with Phased Skeleton Loading -->
+    <div v-if="discoveryStore.isStreaming || (!discoveryStore.isStreaming && !discoveryStore.scopeDocument)" class="document-mock">
+      <!-- Document Header -->
+      <div class="document-header">
+        <div class="document-title">
+          <div class="doc-icon-ring"></div>
+          <span class="doc-title-text">Generating Scope Document</span>
         </div>
-      </div>
-
-      <!-- Live Token Stream -->
-      <div v-if="discoveryStore.currentToken" class="bg-gray-50 rounded-md p-4 font-mono text-sm text-gray-700">
-        {{ discoveryStore.currentToken }}
-      </div>
-    </div>
-
-    <!-- Progressive Results During Streaming -->
-    <div v-if="discoveryStore.isStreaming || (!discoveryStore.isStreaming && !discoveryStore.scopeDocument)" class="space-y-6">
-
-      <!-- Complexity Analysis -->
-      <div v-if="isPhaseInProgress('classify') || isPhaseCompleted('classify')" class="scope-card">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-800">Complexity Assessment</h3>
-          <span v-if="isPhaseCompleted('classify')" class="text-green-500 text-sm font-medium">✓ Completed</span>
-        </div>
-        
-        <ComplexitySkeleton v-if="isPhaseInProgress('classify')" />
-        
-        <div v-else-if="discoveryStore.classificationResult" class="p-4 bg-blue-50 rounded-md">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <span class="text-sm font-medium text-blue-700">Complexity Level:</span>
-              <span class="ml-2 text-blue-900 font-bold capitalize">{{ discoveryStore.classificationResult.complexity }}</span>
-            </div>
-            <div>
-              <span class="text-sm font-medium text-blue-700">Reasoning:</span>
-              <span class="ml-2 text-blue-900">{{ discoveryStore.classificationResult.reasoning }}</span>
-            </div>
+        <div class="progress-indicator">
+          <span class="progress-text">Step {{ currentStepNumber }} of {{ totalPhases }}</span>
+          <div class="progress-bar">
+            <div class="progress-fill" :style="{ width: `${(currentStepNumber / totalPhases) * 100}%` }"></div>
           </div>
         </div>
       </div>
 
-      <!-- Risk Analysis -->
-      <div v-if="isPhaseInProgress('analyze_risks') || isPhaseCompleted('analyze_risks')" class="scope-card">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-800">Risk Analysis</h3>
-          <span v-if="isPhaseCompleted('analyze_risks')" class="text-green-500 text-sm font-medium">✓ Completed</span>
-        </div>
-        
-        <RisksSkeleton v-if="isPhaseInProgress('analyze_risks')" />
-        
-        <div v-else-if="discoveryStore.riskAnalysisResult" class="space-y-4">
-          <div>
-            <h4 class="text-lg font-semibold text-gray-800 mb-3">Identified Risks</h4>
-            <ul class="space-y-2">
-              <li
-                v-for="(risk, index) in discoveryStore.riskAnalysisResult.risks"
-                :key="index"
-                class="flex items-start gap-2 p-3 bg-red-50 rounded-md"
-              >
-                <span class="text-red-500 mt-1">⚠</span>
-                <span class="text-red-900">{{ risk }}</span>
-              </li>
-            </ul>
+      <!-- Document Sections with Phased Skeleton Loading -->
+      <div class="document-sections">
+        <!-- Section 1: Complexity Analysis -->
+        <div class="doc-section" :class="{ active: isPhaseInProgress('classify'), completed: !discoveryStore.isStreaming && isPhaseCompleted('classify') }">
+          <div class="section-header">
+            <div class="section-icon complexity">
+              <div class="icon-bar"></div>
+              <div class="icon-bar short"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Complexity Analysis</span>
+              <span class="section-status">
+                <span v-if="isPhaseInProgress('classify')" class="status-badge processing">
+                  <span class="status-dot"></span>
+                  Processing...
+                </span>
+                <span v-else-if="discoveryStore.isStreaming" class="status-badge pending">Waiting...</span>
+                <span v-else-if="isPhaseCompleted('classify')" class="status-badge completed">✓ Completed</span>
+                <span v-else class="status-badge pending">Waiting...</span>
+              </span>
+            </div>
           </div>
-          
-          <div v-if="discoveryStore.riskAnalysisResult.mitigations && Object.keys(discoveryStore.riskAnalysisResult.mitigations).length > 0">
-            <h4 class="text-lg font-semibold text-gray-800 mb-3">Risk Mitigations</h4>
-            <div class="space-y-3">
-              <div
-                v-for="(mitigation, risk, index) in discoveryStore.riskAnalysisResult.mitigations"
-                :key="index"
-                class="p-3 bg-green-50 rounded-md"
-              >
-                <p class="font-medium text-green-900 mb-1">{{ risk }}</p>
-                <p class="text-sm text-green-800">{{ mitigation }}</p>
+          <div v-if="isPhaseInProgress('classify')" class="section-content">
+            <ComplexitySkeleton />
+          </div>
+          <div v-else-if="isPhaseCompleted('classify') && discoveryStore.classificationResult" class="section-content completed-content">
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Complexity:</span>
+                <span class="result-value capitalize">{{ discoveryStore.classificationResult.complexity }}</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Reasoning:</span>
+                <span class="result-value">{{ discoveryStore.classificationResult.reasoning }}</span>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Section 2: Risk Analysis -->
+        <div class="doc-section" :class="{ active: isPhaseInProgress('analyze_risks'), completed: !discoveryStore.isStreaming && isPhaseCompleted('analyze_risks') }">
+          <div class="section-header">
+            <div class="section-icon risks">
+              <div class="icon-triangle"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Risk Analysis</span>
+              <span class="section-status">
+                <span v-if="isPhaseInProgress('analyze_risks')" class="status-badge processing">
+                  <span class="status-dot"></span>
+                  Processing...
+                </span>
+                <span v-else-if="discoveryStore.isStreaming" class="status-badge pending">Waiting...</span>
+                <span v-else-if="isPhaseCompleted('analyze_risks')" class="status-badge completed">✓ Completed</span>
+                <span v-else class="status-badge pending">Waiting...</span>
+              </span>
+            </div>
+          </div>
+          <div v-if="isPhaseInProgress('analyze_risks')" class="section-content">
+            <RisksSkeleton />
+          </div>
+          <div v-else-if="isPhaseCompleted('analyze_risks') && discoveryStore.riskAnalysisResult?.risks" class="section-content completed-content risks-content">
+            <div v-if="Array.isArray(discoveryStore.riskAnalysisResult.risks) && discoveryStore.riskAnalysisResult.risks.length > 0" class="risks-list">
+              <div v-for="(risk, i) in discoveryStore.riskAnalysisResult.risks.slice(0, 3)" :key="i" class="risk-item">
+                <span class="risk-marker small">!</span>
+                <span class="risk-text">{{ risk }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Scope Generation -->
+        <div class="doc-section" :class="{ active: isPhaseInProgress('generate_scope'), completed: !discoveryStore.isStreaming && isPhaseCompleted('generate_scope') }">
+          <div class="section-header">
+            <div class="section-icon scope">
+              <div class="icon-lines"></div>
+              <div class="icon-lines short"></div>
+              <div class="icon-lines"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Scope Generation</span>
+              <span class="section-status">
+                <span v-if="isPhaseInProgress('generate_scope')" class="status-badge processing">
+                  <span class="status-dot"></span>
+                  Processing...
+                </span>
+                <span v-else-if="discoveryStore.isStreaming" class="status-badge pending">Waiting...</span>
+                <span v-else-if="isPhaseCompleted('generate_scope')" class="status-badge completed">✓ Completed</span>
+                <span v-else class="status-badge pending">Waiting...</span>
+              </span>
+            </div>
+          </div>
+          <div v-if="isPhaseInProgress('generate_scope') || discoveryStore.isStreaming" class="section-content scope-skeletons">
+            <DeliverablesSkeleton />
+            <TechStackSkeleton />
+            <TimelineSkeleton />
+          </div>
+        </div>
       </div>
 
-      <!-- Scope Generation -->
-      <div v-if="isPhaseInProgress('generate_scope')" class="scope-card">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-800">Generating Scope Document</h3>
-        </div>
-        
-        <div class="space-y-6">
-          <DeliverablesSkeleton />
-          <TechStackSkeleton />
-          <TimelineSkeleton />
-        </div>
+      <!-- Current Phase Indicator -->
+      <div v-if="discoveryStore.currentPhase" class="phase-indicator">
+        <div class="phase-ring"></div>
+        <span class="phase-text">{{ formatPhase(discoveryStore.currentPhase) }}</span>
       </div>
     </div>
 
@@ -107,142 +130,233 @@
     </div>
 
     <!-- Final Scope Document -->
-    <div v-if="discoveryStore.scopeDocument && !discoveryStore.isStreaming" class="scope-card">
-      <h3 class="text-2xl font-bold mb-6 text-gray-800">Project Scope Document</h3>
-      
-      <!-- Complexity Analysis -->
-      <div class="mb-6 p-4 bg-blue-50 rounded-md">
-        <h4 class="text-lg font-semibold text-blue-900 mb-2">Complexity Assessment</h4>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <span class="text-sm font-medium text-blue-700">Complexity Level:</span>
-            <span class="ml-2 text-blue-900 font-bold capitalize">{{ discoveryStore.scopeDocument.complexity }}</span>
-          </div>
-          <div>
-            <span class="text-sm font-medium text-blue-700">Reasoning:</span>
-            <span class="ml-2 text-blue-900">{{ discoveryStore.scopeDocument.complexity_reason }}</span>
+    <div v-if="discoveryStore.scopeDocument && !discoveryStore.isStreaming" class="document-mock">
+      <!-- Document Header -->
+      <div class="document-header">
+        <div class="document-title">
+          <div class="doc-icon-ring"></div>
+          <span class="doc-title-text">Project Scope Document</span>
+        </div>
+        <div class="progress-indicator">
+          <span class="progress-text complete">All sections complete</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%"></div>
           </div>
         </div>
       </div>
 
-      <!-- Cost & Timeline Estimates -->
-      <div v-if="hasEstimates" class="mb-6 p-4 bg-green-50 rounded-md">
-        <h4 class="text-lg font-semibold text-green-900 mb-2">Estimates</h4>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <span class="text-sm font-medium text-green-700">Cost Range:</span>
-            <span class="ml-2 text-green-900 font-bold">
-              ${{ discoveryStore.scopeDocument.estimated_cost_min?.toLocaleString() }} - ${{ discoveryStore.scopeDocument.estimated_cost_max?.toLocaleString() }}
-            </span>
-          </div>
-          <div>
-            <span class="text-sm font-medium text-green-700">Timeline:</span>
-            <span class="ml-2 text-green-900 font-bold">
-              {{ discoveryStore.scopeDocument.estimated_weeks_min }} - {{ discoveryStore.scopeDocument.estimated_weeks_max }} weeks
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Deliverables -->
-      <div class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-800 mb-3">Deliverables</h4>
-        <ul class="space-y-2">
-          <li
-            v-for="(deliverable, index) in discoveryStore.scopeDocument.deliverables"
-            :key="index"
-            class="flex items-start gap-2"
-          >
-            <span class="text-blue-500 mt-1">•</span>
-            <span class="text-gray-700">{{ deliverable }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Tech Stack -->
-      <div class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-800 mb-3">Recommended Tech Stack</h4>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div
-            v-for="(tech, category) in discoveryStore.scopeDocument.tech_stack"
-            :key="category"
-            class="p-3 bg-gray-50 rounded-md"
-          >
-            <span class="text-xs font-medium text-gray-500 uppercase">{{ category }}</span>
-            <p class="text-sm font-semibold text-gray-800 mt-1">{{ tech }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Timeline Breakdown -->
-      <div class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-800 mb-3">Timeline Breakdown</h4>
-        <div class="space-y-3">
-          <div
-            v-for="(item, index) in discoveryStore.scopeDocument.timeline_breakdown"
-            :key="index"
-            class="p-3 border border-gray-200 rounded-md"
-          >
-            <div class="flex justify-between items-start">
-              <span class="font-medium text-gray-800">{{ (item as Record<string, unknown>).phase || (item as Record<string, unknown>).milestone || 'Phase ' + (index + 1) }}</span>
-              <span class="text-sm text-gray-500">{{ (item as Record<string, unknown>).duration || (item as Record<string, unknown>).weeks || '' }}</span>
+      <!-- Document Sections -->
+      <div class="document-sections">
+        <!-- Section 1: Complexity -->
+        <div class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon complexity">
+              <div class="icon-bar"></div>
+              <div class="icon-bar short"></div>
             </div>
-            <p v-if="(item as Record<string, unknown>).description || (item as Record<string, unknown>).tasks" class="text-sm text-gray-600 mt-1">
-              {{ (item as Record<string, unknown>).description || (Array.isArray((item as Record<string, unknown>).tasks) ? ((item as Record<string, unknown>).tasks as string[]).join(', ') : String((item as Record<string, unknown>).tasks)) }}
-            </p>
+            <div class="section-info">
+              <span class="section-title">Complexity Assessment</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Complexity Level:</span>
+                <span class="result-value capitalize">{{ discoveryStore.scopeDocument.complexity }}</span>
+              </div>
+              <div class="result-item full-width">
+                <span class="result-label">Reasoning:</span>
+                <span class="result-value">{{ discoveryStore.scopeDocument.complexity_reason }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Estimates -->
+        <div v-if="hasEstimates" class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon estimates">
+              <div class="icon-pie"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Estimates</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Cost Range:</span>
+                <span class="result-value">
+                  ${{ discoveryStore.scopeDocument.estimated_cost_min?.toLocaleString() }} - ${{ discoveryStore.scopeDocument.estimated_cost_max?.toLocaleString() }}
+                </span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Timeline:</span>
+                <span class="result-value">
+                  {{ discoveryStore.scopeDocument.estimated_weeks_min }} - {{ discoveryStore.scopeDocument.estimated_weeks_max }} weeks
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Deliverables -->
+        <div class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon deliverables">
+              <div class="icon-check"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Deliverables</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <ul class="deliverables-list">
+              <li v-for="(deliverable, index) in discoveryStore.scopeDocument.deliverables" :key="index" class="deliverable-item">
+                <span class="bullet"></span>
+                <span class="deliverable-text">{{ deliverable }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Section 4: Tech Stack -->
+        <div class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon tech">
+              <div class="icon-grid"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Recommended Tech Stack</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="tech-grid">
+              <div v-for="(tech, category) in discoveryStore.scopeDocument.tech_stack" :key="category" class="tech-cell">
+                <span class="tech-category">{{ category }}</span>
+                <span class="tech-value">{{ tech }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Timeline -->
+        <div class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon timeline">
+              <div class="icon-clock"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Timeline Breakdown</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="timeline-list">
+              <div v-for="(item, index) in discoveryStore.scopeDocument.timeline_breakdown" :key="index" class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-phase">{{ (item as Record<string, unknown>).phase || (item as Record<string, unknown>).milestone || 'Phase ' + (index + 1) }}</span>
+                    <span class="timeline-duration">{{ (item as Record<string, unknown>).duration || (item as Record<string, unknown>).weeks || '' }}</span>
+                  </div>
+                  <p v-if="(item as Record<string, unknown>).description || (item as Record<string, unknown>).tasks" class="timeline-desc">
+                    {{ (item as Record<string, unknown>).description || (Array.isArray((item as Record<string, unknown>).tasks) ? ((item as Record<string, unknown>).tasks as string[]).join(', ') : String((item as Record<string, unknown>).tasks)) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Risks -->
+        <div class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon risks">
+              <div class="icon-triangle"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Potential Risks</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="risks-list">
+              <div v-for="(risk, index) in discoveryStore.scopeDocument.risks" :key="index" class="risk-item">
+                <span class="risk-marker">!</span>
+                <span class="risk-text">{{ risk }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: Risk Mitigations -->
+        <div v-if="discoveryStore.scopeDocument.mitigations && Object.keys(discoveryStore.scopeDocument.mitigations).length > 0" class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon mitigations">
+              <div class="icon-shield"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Risk Mitigations</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="mitigation-list">
+              <div v-for="(mitigation, risk, index) in discoveryStore.scopeDocument.mitigations" :key="index" class="mitigation-item">
+                <span class="mitigation-risk">{{ risk }}</span>
+                <span class="mitigation-text">{{ mitigation }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 8: Out of Scope -->
+        <div class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon outofscope">
+              <div class="icon-cross"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Out of Scope</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Completed</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content">
+            <div class="outofscope-list">
+              <div v-for="(item, index) in discoveryStore.scopeDocument.out_of_scope" :key="index" class="outofscope-item">
+                <span class="outofscope-marker">×</span>
+                <span class="outofscope-text">{{ item }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Risks -->
-      <div class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-800 mb-3">Potential Risks</h4>
-        <ul class="space-y-2">
-          <li
-            v-for="(risk, index) in discoveryStore.scopeDocument.risks"
-            :key="index"
-            class="flex items-start gap-2 p-3 bg-red-50 rounded-md"
-          >
-            <span class="text-red-500 mt-1">⚠</span>
-            <span class="text-red-900">{{ risk }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Risk Mitigations -->
-      <div v-if="discoveryStore.scopeDocument.mitigations && Object.keys(discoveryStore.scopeDocument.mitigations).length > 0" class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-800 mb-3">Risk Mitigations</h4>
-        <div class="space-y-3">
-          <div
-            v-for="(mitigation, risk, index) in discoveryStore.scopeDocument.mitigations"
-            :key="index"
-            class="p-3 bg-green-50 rounded-md"
-          >
-            <p class="font-medium text-green-900 mb-1">{{ risk }}</p>
-            <p class="text-sm text-green-800">{{ mitigation }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Out of Scope -->
-      <div class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-800 mb-3">Out of Scope</h4>
-        <ul class="space-y-2">
-          <li
-            v-for="(item, index) in discoveryStore.scopeDocument.out_of_scope"
-            :key="index"
-            class="flex items-start gap-2 p-3 bg-gray-100 rounded-md"
-          >
-            <span class="text-gray-500 mt-1">✗</span>
-            <span class="text-gray-700">{{ item }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Metadata -->
-      <div class="text-xs text-gray-500 pt-4 border-t">
-        <p>Generated at: {{ new Date(discoveryStore.scopeDocument.created_at as string | number | Date).toLocaleString() }}</p>
-        <p>Request ID: {{ discoveryStore.scopeDocument.request_id }}</p>
+      <!-- Metadata Footer -->
+      <div class="document-footer">
+        <p class="meta-text">Generated at: {{ new Date(discoveryStore.scopeDocument.created_at as string | number | Date).toLocaleString() }}</p>
+        <p class="meta-text">Request ID: {{ discoveryStore.scopeDocument.request_id }}</p>
       </div>
     </div>
   </div>
@@ -269,6 +383,20 @@ const hasEstimates = computed(() => {
   )
 })
 
+const totalPhases = 3
+
+const currentStepNumber = computed(() => {
+  // Show current step number (1, 2, or 3) based on active phase
+  if (discoveryStore.isStreaming) {
+    if (discoveryStore.currentPhase === 'classify') return 1
+    if (discoveryStore.currentPhase === 'analyze_risks') return 2
+    if (discoveryStore.currentPhase === 'generate_scope') return 3
+    return 1
+  }
+  // When not streaming, show 3 (all done)
+  return 3
+})
+
 // Check if a phase is currently being processed
 const isPhaseInProgress = (phase: string) => {
   return discoveryStore.currentPhase === phase && discoveryStore.isStreaming
@@ -276,6 +404,13 @@ const isPhaseInProgress = (phase: string) => {
 
 // Check if a phase has completed
 const isPhaseCompleted = (phase: string) => {
+  // During streaming, only show as completed if explicitly in completedPhases
+  // and NOT currently being processed
+  if (discoveryStore.isStreaming) {
+    return discoveryStore.completedPhases.has(phase) && 
+           discoveryStore.currentPhase !== phase
+  }
+  // When not streaming, check completedPhases or if we have final document
   return discoveryStore.completedPhases.has(phase) || 
          (discoveryStore.scopeDocument && !discoveryStore.isStreaming)
 }
@@ -362,5 +497,731 @@ function formatPhase(phase: string) {
 
 :deep(.shadow-lg) {
   box-shadow: none !important;
+}
+
+/* Document Mock UI - Grid with Scanning Lens */
+.document-mock {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+  border-radius: 24px;
+  padding: var(--space-8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Document Header */
+.document-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.document-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.doc-icon-ring {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  position: relative;
+}
+
+.doc-icon-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+}
+
+.progress-text.complete {
+  color: rgba(100, 255, 100, 0.8);
+}
+
+.doc-title-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.progress-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.progress-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.9));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* Document Sections */
+.document-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.doc-section {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  padding: var(--space-5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.doc-section.active {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.doc-section.completed {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(100, 255, 100, 0.15);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.section-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-icon.complexity {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  flex-direction: column;
+  gap: 4px;
+}
+
+.icon-bar {
+  width: 20px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+}
+
+.icon-bar.short {
+  width: 12px;
+}
+
+.section-icon.risks {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid rgba(255, 255, 255, 0.9);
+}
+
+.section-icon.scope {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  padding-left: 10px;
+}
+
+.icon-lines {
+  width: 18px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1px;
+}
+
+.icon-lines.short {
+  width: 12px;
+}
+
+/* Additional section icons for final document */
+.section-icon.estimates {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-pie {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  border-right-color: transparent;
+  transform: rotate(-45deg);
+}
+
+.section-icon.deliverables {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-check {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+  position: relative;
+}
+
+.icon-check::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid rgba(255, 255, 255, 0.9);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.section-icon.tech {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-grid {
+  width: 16px;
+  height: 16px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+
+.section-icon.timeline {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-clock {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: relative;
+}
+
+.icon-clock::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 1px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.section-icon.mitigations {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-shield {
+  width: 14px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.section-icon.outofscope {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-cross {
+  width: 14px;
+  height: 14px;
+  position: relative;
+}
+
+.icon-cross::before,
+.icon-cross::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.icon-cross::before {
+  transform: rotate(45deg);
+}
+
+.icon-cross::after {
+  transform: rotate(-45deg);
+}
+
+.section-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.section-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.status-badge.processing {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.status-badge.completed {
+  color: rgba(100, 255, 100, 0.9);
+  background: rgba(100, 255, 100, 0.1);
+}
+
+.status-badge.pending {
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.section-content {
+  padding-left: calc(40px + var(--space-4));
+}
+
+.section-content.completed-content {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: var(--space-4);
+}
+
+.section-content.scope-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.result-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.result-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.result-value {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.result-value.capitalize {
+  text-transform: capitalize;
+}
+
+.risks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.risk-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.risk-icon {
+  color: rgba(239, 68, 68, 0.8);
+}
+
+.risk-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Additional styles for final document sections */
+.deliverables-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.deliverable-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(34, 197, 94, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.bullet {
+  width: 6px;
+  height: 6px;
+  background: rgba(34, 197, 94, 0.8);
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.deliverable-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.tech-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: rgba(6, 182, 212, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(6, 182, 212, 0.1);
+}
+
+.tech-category {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tech-value {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.timeline-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(245, 158, 11, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.timeline-marker {
+  width: 8px;
+  height: 8px;
+  background: rgba(245, 158, 11, 0.8);
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.timeline-phase {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.timeline-duration {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.timeline-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.risk-marker {
+  width: 16px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+}
+
+.risk-marker.small {
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+}
+
+.mitigation-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mitigation-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.mitigation-risk {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(239, 68, 68, 0.8);
+}
+
+.mitigation-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.outofscope-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.outofscope-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: rgba(107, 114, 128, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(107, 114, 128, 0.1);
+}
+
+.outofscope-marker {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(107, 114, 128, 0.8);
+  flex-shrink: 0;
+}
+
+.outofscope-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.document-footer {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.meta-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+/* Phase Indicator */
+.phase-indicator {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  padding: var(--space-3) var(--space-5);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 100;
+}
+
+.phase-ring {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  position: relative;
+  animation: phasePulse 1.5s ease-in-out infinite;
+}
+
+.phase-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: phaseDotPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes phasePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+@keyframes phaseDotPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.5;
+  }
+}
+
+.phase-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 </style>
