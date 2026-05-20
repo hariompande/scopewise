@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: scopewise
+      POSTGRES_USER: scopewise
+      POSTGRES_PASSWORD: scopewise
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scopewise -d scopewise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

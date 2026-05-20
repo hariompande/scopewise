@@ -1,0 +1,25 @@
+{% include '_system.j2' %}
+---
+# Step: Analyze Risks
+Context:
+- Classified result: complexity={{ classify.complexity }}, reasoning="{{ classify.reasoning }}"
+- user_input: {{ user_input }}
+
+INSTRUCTIONS:
+1. Return exactly one JSON object (no markdown, no prose, no code fences).
+2. The object MUST contain exactly two keys: "risks" and "mitigations".
+	 - "risks": a list of short risk descriptions (strings).
+	 - "mitigations": an object mapping each risk string to a concise mitigation string.
+3. Use the `classify` inputs (complexity and reasoning) to calibrate the number and severity of risks.
+4. Provide 2–5 risks when complexity is "mid_tier" or "complex", 1–3 for "simple", and 3–6 for "enterprise".
+5. Keep each risk and mitigation to one short sentence each. Do not include extra keys.
+
+OUTPUT EXAMPLE:
+{
+	"risks": ["Third-party auth may fail under load", "Unclear data migration approach"],
+	"mitigations": {
+		"Third-party auth may fail under load": "Add retry logic and rate-limiting, and test with 10k users",
+		"Unclear data migration approach": "Define a backfill plan and run a dry-run on staging"
+	}
+}
+---

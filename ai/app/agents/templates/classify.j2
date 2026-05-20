@@ -1,0 +1,22 @@
+{% include '_system.j2' %}
+Step: Classify complexity
+
+Context:
+user_input:
+{{ user_input }}
+
+INSTRUCTIONS:
+Return exactly one JSON object (no markdown, no prose, no code fences).
+The object must contain exactly two keys: "complexity" and "reasoning".
+complexity MUST be one of: "simple", "mid_tier", "complex", "enterprise".
+Choose exactly one value that best fits the user_input.
+reasoning MUST be a concise 1–2 sentence justification referencing the signals used.
+Do not add extra keys or metadata.
+
+OUTPUT FORMAT (example):
+{% raw %}
+{
+  "complexity": "mid_tier",
+  "reasoning": "Reason: <brief justification referencing size, integrations, or uncertainty>"
+}
+{% endraw %}

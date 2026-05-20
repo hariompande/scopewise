@@ -1,0 +1,53 @@
+{% include '_system.j2' %}
+---
+# Step: Generate Scope
+Context:
+- Classified complexity: {{ classify.complexity }}
+- Known risks: {{ analyze_risks.risks | tojson }}
+- user_input: {{ user_input }}
+
+INSTRUCTIONS:
+1. Return exactly one JSON object (no markdown, no prose, no code fences).
+2. The object MUST contain exactly these keys:
+	 - "deliverables": list[str]
+	 - "tech_stack": dict[str, str]
+	 - "timeline_breakdown": list[dict[str, str]]
+	 - "risks": list[str]
+	 - "out_of_scope": list[str]
+3. Use `classify.complexity` to calibrate depth and breadth.
+	 - "simple": minimal but complete scope.
+	 - "mid_tier" or "complex": moderate detail with clear phase boundaries.
+	 - "enterprise": detailed scope with stronger decomposition.
+4. Use `analyze_risks.risks` as the baseline risk list; you may refine wording but do not omit major risks.
+5. Keep all values concise, specific, and implementation-oriented.
+6. Do not add any extra top-level keys.
+
+OUTPUT EXAMPLE:
+{
+	"deliverables": [
+		"Requirements and technical design document",
+		"Core backend APIs and database schema",
+		"Frontend user flows and admin dashboard",
+		"Deployment pipeline and monitoring setup"
+	],
+	"tech_stack": {
+		"frontend": "React + TypeScript",
+		"backend": "FastAPI + Python",
+		"database": "PostgreSQL",
+		"infrastructure": "Docker + managed cloud runtime"
+	},
+	"timeline_breakdown": [
+		{"phase": "Discovery", "duration": "1-2 weeks", "focus": "Requirements, architecture, scope validation"},
+		{"phase": "Build", "duration": "4-8 weeks", "focus": "Core features, integrations, QA"},
+		{"phase": "Launch", "duration": "1-2 weeks", "focus": "Hardening, rollout, observability"}
+	],
+	"risks": [
+		"Third-party API rate limits may affect reliability",
+		"Ambiguous requirements can cause rework"
+	],
+	"out_of_scope": [
+		"Native mobile applications",
+		"Advanced ML personalization in phase one"
+	]
+}
+---
