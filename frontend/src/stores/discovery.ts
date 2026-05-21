@@ -38,6 +38,11 @@ export const useDiscoveryStore = defineStore('discovery', () => {
   const error = ref<string | null>(null)
 
   // Intermediate results for progressive display
+  // Research phase results
+  const firmHistoryResult = ref<Record<string, unknown> | null>(null)
+  const resourcesResult = ref<Record<string, unknown> | null>(null)
+  const marketResearchResult = ref<Record<string, unknown> | null>(null)
+  // Original pipeline results
   const classificationResult = ref<Record<string, unknown> | null>(null)
   const riskAnalysisResult = ref<Record<string, unknown> | null>(null)
   const scopeGenerationResult = ref<Record<string, unknown> | null>(null)
@@ -65,7 +70,7 @@ export const useDiscoveryStore = defineStore('discovery', () => {
       `Constraints: ${form.value.constraints}`,
       `Additional Notes: ${form.value.additionalNotes}`,
     ]
-    return parts.filter(p => p.trim() !== '').join('\n')
+    return parts.filter((p) => p.trim() !== '').join('\n')
   })
 
   return {
@@ -77,7 +82,11 @@ export const useDiscoveryStore = defineStore('discovery', () => {
     currentToken,
     scopeDocument,
     error,
-    // Intermediate results
+    // Research phase results
+    firmHistoryResult,
+    resourcesResult,
+    marketResearchResult,
+    // Original pipeline results
     classificationResult,
     riskAnalysisResult,
     scopeGenerationResult,

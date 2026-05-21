@@ -80,3 +80,4 @@ ai/.coverage.*
 ai/dist/
 ai/build/
 ai/*.egg-info/
+ai/chroma_db/

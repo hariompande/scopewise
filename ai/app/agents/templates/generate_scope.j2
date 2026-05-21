@@ -6,6 +6,30 @@ Context:
 - Known risks: {{ analyze_risks.risks | tojson }}
 - user_input: {{ user_input }}
 
+{% if search_firm_history and search_firm_history.total_matches > 0 %}
+Firm History ({{ search_firm_history.total_matches }} similar past projects found):
+- Summary: {{ search_firm_history.relevant_experience_summary }}
+- Recommended approach: {{ search_firm_history.recommended_approach }}
+- Similar projects: {% for p in search_firm_history.similar_projects[:3] %}{{ p.project_name }} ({{ p.project_type }}, {{ p.duration_weeks }}w, team:{{ p.team_size }}, tech: {{ p.tech_stack | join(', ') }}){% if not loop.last %}; {% endif %}{% endfor %}
+
+Use this firm history to calibrate realistic timelines, team sizes, and tech stack recommendations.
+{% endif %}
+
+{% if check_resources %}
+Available Team Resources:
+- {{ check_resources.experts_available_count }} experts available, {{ check_resources.reallocatable_count }} potentially reallocatable
+- Suggestion: {{ check_resources.potential_team_composition }}
+- Recommendation: {{ check_resources.resource_recommendation }}
+{% endif %}
+
+{% if market_research %}
+Market Context:
+- Trends: {{ market_research.market_trends }}
+{% if market_research.typical_budget_range %}- Typical budget: {{ market_research.typical_budget_range }}{% endif %}
+{% if market_research.typical_timeline %}- Typical timeline: {{ market_research.typical_timeline }}{% endif %}
+{% if market_research.technology_recommendations %}- Market tech recommendations: {{ market_research.technology_recommendations | join(', ') }}{% endif %}
+{% endif %}
+
 INSTRUCTIONS:
 1. Return exactly one JSON object (no markdown, no prose, no code fences).
 2. The object MUST contain exactly these keys:

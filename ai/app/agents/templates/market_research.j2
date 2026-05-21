@@ -1,0 +1,18 @@
+{# market_research.j2 - Market Research Step #}
+{# This template documents the market research step. The actual search is performed #}
+{# by the MarketResearchTool which uses Tavily web search API. #}
+
+Step: Market Research
+Description: Search the web for similar projects and market data.
+
+Input: {{ user_input }}
+Project Type: {{ project_type | default('software project') }}
+Industry: {{ industry | default('') }}
+
+This step will:
+1. Perform web searches for similar project case studies
+2. Gather market trends and competitive landscape data
+3. Find typical budget ranges and timelines
+4. Identify recommended technology stacks from market data
+
+The results will be available in the pipeline state as `market_research`.

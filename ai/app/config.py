@@ -38,6 +38,20 @@ class Settings(BaseSettings):
     )
     openrouter_max_retries: int = 3
     
+    # OpenAI Configuration (for direct OpenAI usage - optional, we use OpenRouter)
+    openai_api_key: SecretStr | None = None
+    openai_embedding_model: str = "text-embedding-3-small"
+    
+    # Note: Embeddings now use OpenRouter (configured via openrouter_api_key above)
+    # This supports models like: openai/text-embedding-3-small
+    
+    # Tavily Configuration (for web search in market research)
+    tavily_api_key: SecretStr | None = None
+    
+    # ChromaDB Configuration (for vector store)
+    chroma_persist_directory: str = "./chroma_db"
+    chroma_collection_name: str = "firm_projects"
+    
     # Logging
     log_level: str = "INFO"
 

@@ -1,0 +1,16 @@
+{# search_firm_history.j2 - Firm History Research Step #}
+{# This template documents the RAG search step. The actual search is performed #}
+{# by the FirmHistorySearchTool which queries the ChromaDB vector store. #}
+
+Step: Search Firm History
+Description: Search for similar projects in our firm's history using vector similarity search.
+
+Input: {{ user_input }}
+
+This step will:
+1. Convert the project description into embeddings
+2. Search the vector store (ChromaDB) for similar past projects
+3. Return top matches with relevance scores
+4. Extract learnings and recommended approaches from similar projects
+
+The results will be available in the pipeline state as `search_firm_history`.

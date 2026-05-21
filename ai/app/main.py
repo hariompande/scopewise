@@ -1,5 +1,14 @@
 """FastAPI main application for ScopeWise."""
 
+# Patch sqlite3 BEFORE any chromadb/langchain_chroma import.
+# ChromaDB requires sqlite3 >= 3.35.0; pysqlite3-binary ships a newer version.
+import sys
+try:
+    import pysqlite3  # type: ignore[import-untyped]
+    sys.modules["sqlite3"] = pysqlite3
+except ImportError:
+    pass
+
 import logging
 from contextlib import asynccontextmanager
 

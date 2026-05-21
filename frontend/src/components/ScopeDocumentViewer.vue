@@ -18,7 +18,123 @@
 
       <!-- Document Sections with Phased Skeleton Loading -->
       <div class="document-sections">
-        <!-- Section 1: Complexity Analysis -->
+        <!-- Section 1: Firm History Research -->
+        <div class="doc-section" :class="{ active: isPhaseInProgress('search_firm_history'), completed: !discoveryStore.isStreaming && isPhaseCompleted('search_firm_history') }">
+          <div class="section-header">
+            <div class="section-icon research">
+              <div class="icon-history"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Firm History Research</span>
+              <span class="section-status">
+                <span v-if="isPhaseInProgress('search_firm_history')" class="status-badge processing">
+                  <span class="status-dot"></span>
+                  Searching past projects...
+                </span>
+                <span v-else-if="isPhaseCompleted('search_firm_history')" class="status-badge completed">
+                  <span v-if="((discoveryStore.firmHistoryResult as any)?.total_matches || 0) > 0">
+                    ✓ {{ (discoveryStore.firmHistoryResult as any)?.total_matches }} similar projects found
+                  </span>
+                  <span v-else>✓ No direct matches found</span>
+                </span>
+                <span v-else class="status-badge pending">Waiting...</span>
+              </span>
+            </div>
+          </div>
+          <div v-if="isPhaseCompleted('search_firm_history') && discoveryStore.firmHistoryResult" class="section-content completed-content research-content">
+            <p class="research-summary">{{ (discoveryStore.firmHistoryResult as any).relevant_experience_summary }}</p>
+            <p v-if="(discoveryStore.firmHistoryResult as any).recommended_approach" class="research-recommendation">
+              <strong>Recommendation:</strong> {{ (discoveryStore.firmHistoryResult as any).recommended_approach }}
+            </p>
+            <div v-if="(discoveryStore.firmHistoryResult as any).similar_projects?.length" class="similar-projects">
+              <span class="projects-label">Similar Projects:</span>
+              <div v-for="(proj, i) in (discoveryStore.firmHistoryResult as any).similar_projects.slice(0, 3)" :key="i" class="project-chip">
+                {{ proj.project_name }} ({{ Math.round(proj.relevance_score * 100) }}% match)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Resource Availability -->
+        <div class="doc-section" :class="{ active: isPhaseInProgress('check_resources'), completed: !discoveryStore.isStreaming && isPhaseCompleted('check_resources') }">
+          <div class="section-header">
+            <div class="section-icon resources">
+              <div class="icon-team"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Resource Availability</span>
+              <span class="section-status">
+                <span v-if="isPhaseInProgress('check_resources')" class="status-badge processing">
+                  <span class="status-dot"></span>
+                  Checking team capacity...
+                </span>
+                <span v-else-if="isPhaseCompleted('check_resources')" class="status-badge completed">
+                  <span v-if="discoveryStore.resourcesResult">
+                    ✓ {{ (discoveryStore.resourcesResult as any).experts_available_count || 0 }} experts, {{ (discoveryStore.resourcesResult as any).reallocatable_count || 0 }} reallocatable
+                  </span>
+                  <span v-else>✓ Checked</span>
+                </span>
+                <span v-else class="status-badge pending">Waiting...</span>
+              </span>
+            </div>
+          </div>
+          <div v-if="isPhaseCompleted('check_resources') && discoveryStore.resourcesResult" class="section-content completed-content research-content">
+            <p class="research-summary">{{ (discoveryStore.resourcesResult as any).resource_recommendation }}</p>
+            <p v-if="(discoveryStore.resourcesResult as any).potential_team_composition" class="team-composition">
+              <strong>Team Suggestion:</strong> {{ (discoveryStore.resourcesResult as any).potential_team_composition }}
+            </p>
+            <div v-if="(discoveryStore.resourcesResult as any).skill_coverage_analysis" class="skill-coverage">
+              <span class="coverage-label">Skill Coverage:</span>
+              <div v-for="(count, skill) in (discoveryStore.resourcesResult as any).skill_coverage_analysis" :key="skill" class="skill-chip">
+                {{ skill }}: {{ count }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Market Research -->
+        <div class="doc-section" :class="{ active: isPhaseInProgress('market_research'), completed: !discoveryStore.isStreaming && isPhaseCompleted('market_research') }">
+          <div class="section-header">
+            <div class="section-icon market">
+              <div class="icon-globe"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Market Research</span>
+              <span class="section-status">
+                <span v-if="isPhaseInProgress('market_research')" class="status-badge processing">
+                  <span class="status-dot"></span>
+                  Analyzing market data...
+                </span>
+                <span v-else-if="isPhaseCompleted('market_research')" class="status-badge completed">
+                  <span v-if="(discoveryStore.marketResearchResult as any)?.typical_budget_range">✓ Market data gathered</span>
+                  <span v-else>✓ Checked</span>
+                </span>
+                <span v-else class="status-badge pending">Waiting...</span>
+              </span>
+            </div>
+          </div>
+          <div v-if="isPhaseCompleted('market_research') && discoveryStore.marketResearchResult" class="section-content completed-content research-content">
+            <p class="research-summary">{{ (discoveryStore.marketResearchResult as any).market_trends }}</p>
+            <div class="market-stats">
+              <div v-if="(discoveryStore.marketResearchResult as any).typical_budget_range" class="market-stat">
+                <span class="stat-label">Typical Budget:</span>
+                <span class="stat-value">{{ (discoveryStore.marketResearchResult as any).typical_budget_range }}</span>
+              </div>
+              <div v-if="(discoveryStore.marketResearchResult as any).typical_timeline" class="market-stat">
+                <span class="stat-label">Typical Timeline:</span>
+                <span class="stat-value">{{ (discoveryStore.marketResearchResult as any).typical_timeline }}</span>
+              </div>
+            </div>
+            <div v-if="(discoveryStore.marketResearchResult as any).technology_recommendations?.length" class="tech-recommendations">
+              <span class="tech-label">Market Tech Trends:</span>
+              <div v-for="(tech, i) in (discoveryStore.marketResearchResult as any).technology_recommendations.slice(0, 4)" :key="i" class="tech-chip">
+                {{ tech }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Complexity Analysis -->
         <div class="doc-section" :class="{ active: isPhaseInProgress('classify'), completed: !discoveryStore.isStreaming && isPhaseCompleted('classify') }">
           <div class="section-header">
             <div class="section-icon complexity">
@@ -55,7 +171,7 @@
           </div>
         </div>
 
-        <!-- Section 2: Risk Analysis -->
+        <!-- Section 5: Risk Analysis -->
         <div class="doc-section" :class="{ active: isPhaseInProgress('analyze_risks'), completed: !discoveryStore.isStreaming && isPhaseCompleted('analyze_risks') }">
           <div class="section-header">
             <div class="section-icon risks">
@@ -87,7 +203,7 @@
           </div>
         </div>
 
-        <!-- Section 3: Scope Generation -->
+        <!-- Section 6: Scope Generation -->
         <div class="doc-section" :class="{ active: isPhaseInProgress('generate_scope'), completed: !discoveryStore.isStreaming && isPhaseCompleted('generate_scope') }">
           <div class="section-header">
             <div class="section-icon scope">
@@ -351,6 +467,101 @@
             </div>
           </div>
         </div>
+
+        <!-- Section 9: Firm History Research -->
+        <div v-if="discoveryStore.firmHistoryResult" class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon research">
+              <div class="icon-history"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Firm History Research</span>
+              <span class="section-status">
+                <span class="status-badge completed">
+                  <span v-if="((discoveryStore.firmHistoryResult as any)?.total_matches || 0) > 0">
+                    ✓ {{ (discoveryStore.firmHistoryResult as any)?.total_matches }} similar projects found
+                  </span>
+                  <span v-else>✓ No direct matches found</span>
+                </span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content research-content">
+            <p class="research-summary">{{ (discoveryStore.firmHistoryResult as any).relevant_experience_summary }}</p>
+            <p v-if="(discoveryStore.firmHistoryResult as any).recommended_approach" class="research-recommendation">
+              <strong>Recommendation:</strong> {{ (discoveryStore.firmHistoryResult as any).recommended_approach }}
+            </p>
+            <div v-if="(discoveryStore.firmHistoryResult as any).similar_projects?.length" class="similar-projects">
+              <span class="projects-label">Similar Projects:</span>
+              <div v-for="(proj, i) in (discoveryStore.firmHistoryResult as any).similar_projects.slice(0, 3)" :key="i" class="project-chip">
+                {{ proj.project_name }} ({{ Math.round(proj.relevance_score * 100) }}% match)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 10: Resource Availability -->
+        <div v-if="discoveryStore.resourcesResult" class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon resources">
+              <div class="icon-team"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Resource Availability</span>
+              <span class="section-status">
+                <span class="status-badge completed">
+                  ✓ {{ (discoveryStore.resourcesResult as any).experts_available_count || 0 }} experts, {{ (discoveryStore.resourcesResult as any).reallocatable_count || 0 }} reallocatable
+                </span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content research-content">
+            <p class="research-summary">{{ (discoveryStore.resourcesResult as any).resource_recommendation }}</p>
+            <p v-if="(discoveryStore.resourcesResult as any).potential_team_composition" class="team-composition">
+              <strong>Team Suggestion:</strong> {{ (discoveryStore.resourcesResult as any).potential_team_composition }}
+            </p>
+            <div v-if="(discoveryStore.resourcesResult as any).skill_coverage_analysis" class="skill-coverage">
+              <span class="coverage-label">Skill Coverage:</span>
+              <div v-for="(count, skill) in (discoveryStore.resourcesResult as any).skill_coverage_analysis" :key="skill" class="skill-chip">
+                {{ skill }}: {{ count }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 11: Market Research -->
+        <div v-if="discoveryStore.marketResearchResult" class="doc-section completed">
+          <div class="section-header">
+            <div class="section-icon market">
+              <div class="icon-globe"></div>
+            </div>
+            <div class="section-info">
+              <span class="section-title">Market Research</span>
+              <span class="section-status">
+                <span class="status-badge completed">✓ Market data gathered</span>
+              </span>
+            </div>
+          </div>
+          <div class="section-content completed-content research-content">
+            <p class="research-summary">{{ (discoveryStore.marketResearchResult as any).market_trends }}</p>
+            <div class="market-stats">
+              <div v-if="(discoveryStore.marketResearchResult as any).typical_budget_range" class="market-stat">
+                <span class="stat-label">Typical Budget:</span>
+                <span class="stat-value">{{ (discoveryStore.marketResearchResult as any).typical_budget_range }}</span>
+              </div>
+              <div v-if="(discoveryStore.marketResearchResult as any).typical_timeline" class="market-stat">
+                <span class="stat-label">Typical Timeline:</span>
+                <span class="stat-value">{{ (discoveryStore.marketResearchResult as any).typical_timeline }}</span>
+              </div>
+            </div>
+            <div v-if="(discoveryStore.marketResearchResult as any).technology_recommendations?.length" class="tech-recommendations">
+              <span class="tech-label">Market Tech Trends:</span>
+              <div v-for="(tech, i) in (discoveryStore.marketResearchResult as any).technology_recommendations.slice(0, 4)" :key="i" class="tech-chip">
+                {{ tech }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Metadata Footer -->
@@ -383,18 +594,20 @@ const hasEstimates = computed(() => {
   )
 })
 
-const totalPhases = 3
+const totalPhases = 6
 
 const currentStepNumber = computed(() => {
-  // Show current step number (1, 2, or 3) based on active phase
+  // Step numbers match backend execution order
   if (discoveryStore.isStreaming) {
-    if (discoveryStore.currentPhase === 'classify') return 1
-    if (discoveryStore.currentPhase === 'analyze_risks') return 2
-    if (discoveryStore.currentPhase === 'generate_scope') return 3
+    if (discoveryStore.currentPhase === 'search_firm_history') return 1
+    if (discoveryStore.currentPhase === 'check_resources') return 2
+    if (discoveryStore.currentPhase === 'market_research') return 3
+    if (discoveryStore.currentPhase === 'classify') return 4
+    if (discoveryStore.currentPhase === 'analyze_risks') return 5
+    if (discoveryStore.currentPhase === 'generate_scope') return 6
     return 1
   }
-  // When not streaming, show 3 (all done)
-  return 3
+  return 6
 })
 
 // Check if a phase is currently being processed
@@ -417,6 +630,12 @@ const isPhaseCompleted = (phase: string) => {
 
 function formatPhase(phase: string) {
   switch (phase) {
+    case 'search_firm_history':
+      return 'Searching firm history...'
+    case 'check_resources':
+      return 'Checking resource availability...'
+    case 'market_research':
+      return 'Researching market data...'
     case 'classify':
       return 'Classifying project complexity...'
     case 'analyze_risks':
@@ -740,6 +959,94 @@ function formatPhase(phase: string) {
   background-size: 7px 7px;
 }
 
+/* Research section icons */
+.section-icon.research {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.icon-history {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  border-bottom-color: transparent;
+  position: relative;
+}
+
+.icon-history::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.section-icon.resources {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.icon-team {
+  width: 18px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+.icon-team::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.section-icon.market {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.icon-globe {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: relative;
+}
+
+.icon-globe::before,
+.icon-globe::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.icon-globe::before {
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.icon-globe::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .section-icon.timeline {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
@@ -870,6 +1177,94 @@ function formatPhase(phase: string) {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+/* Research content styling */
+.research-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.research-summary {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.research-recommendation,
+.team-composition {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border-left: 3px solid rgba(99, 102, 241, 0.5);
+}
+
+.similar-projects,
+.skill-coverage,
+.tech-recommendations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.projects-label,
+.coverage-label,
+.tech-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.project-chip,
+.skill-chip,
+.tech-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(99, 102, 241, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.skill-chip {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.tech-chip {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.market-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.market-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
 }
 
 .result-grid {

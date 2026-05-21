@@ -79,6 +79,11 @@ from app.database.models import (
 # PipelineRun row *before* that step's LLM call begins.  This lets the API
 # layer report live progress to the client.
 STEP_STATUS_MAP: dict[str, PipelineStatus] = {
+    # Research phase steps
+    "search_firm_history": PipelineStatus.searching_firm_history,
+    "check_resources": PipelineStatus.checking_resources,
+    "market_research": PipelineStatus.market_research,
+    # Original pipeline steps
     "classify": PipelineStatus.classifying,
     "analyze_risks": PipelineStatus.analyzing_risks,
     "generate_scope": PipelineStatus.generating_scope,
@@ -189,8 +194,21 @@ class AgentService:
         pipeline_run = self._resolve_pipeline_run(scope_request, db_session)
 
         # Build the LangChain Runnable and seed the initial state.
-        initial: dict[str, Any] = {"user_input": scope_request.user_input}
-        runnable = build_scope_pipeline_runnable(self._llm, self.template_loader)
+        # Include project_type and other metadata from the request for research phase
+        initial: dict[str, Any] = {
+            "user_input": scope_request.user_input,
+            "project_type": getattr(scope_request, 'project_type', ''),
+            "industry": getattr(scope_request, 'industry', ''),
+            "budget": getattr(scope_request, 'budget_range', ''),
+        }
+        
+        # Build pipeline with research phase support
+        runnable = build_scope_pipeline_runnable(
+            self._llm,
+            self.template_loader,
+            settings=self.settings,
+            db_session=db_session
+        )
 
         # Set status to the first step before we start streaming.
         stream_phase = STEP_ORDER[0]  # "classify"

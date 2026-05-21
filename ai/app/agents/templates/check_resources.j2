@@ -1,0 +1,16 @@
+{# check_resources.j2 - Resource Availability Check Step #}
+{# This template documents the resource check step. The actual query is performed #}
+{# by the ResourceAvailabilityChecker which queries the SQL database. #}
+
+Step: Check Resource Availability
+Description: Query internal database for available experts and reallocatable resources.
+
+Input: Project requirements extracted from user input
+
+This step will:
+1. Extract likely required skills from the project description
+2. Query the employees table for available experts matching those skills
+3. Check project assignments for resources on lower priority projects
+4. Calculate skill coverage and make recommendations
+
+The results will be available in the pipeline state as `check_resources`.

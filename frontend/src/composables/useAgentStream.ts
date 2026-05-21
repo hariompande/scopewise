@@ -19,6 +19,11 @@ export function useAgentStream() {
     currentToken,
     scopeDocument,
     error,
+    // Research phase results
+    firmHistoryResult,
+    resourcesResult,
+    marketResearchResult,
+    // Original pipeline results
     classificationResult,
     riskAnalysisResult,
     scopeGenerationResult,
@@ -38,6 +43,13 @@ export function useAgentStream() {
     currentToken.value = ''
     scopeDocument.value = null
     error.value = null
+    completedPhases.value = new Set()
+    firmHistoryResult.value = null
+    resourcesResult.value = null
+    marketResearchResult.value = null
+    classificationResult.value = null
+    riskAnalysisResult.value = null
+    scopeGenerationResult.value = null
 
     // Create EventSource connection
     const url = `${API_BASE_URL}/pipeline/run-stream`
@@ -125,7 +137,16 @@ export function useAgentStream() {
 
       case 'phase_result':
         if (event.output && event.phase) {
-          if (event.phase === 'classify') {
+          // Research phase results
+          if (event.phase === 'search_firm_history') {
+            firmHistoryResult.value = event.output
+          } else if (event.phase === 'check_resources') {
+            resourcesResult.value = event.output
+          } else if (event.phase === 'market_research') {
+            marketResearchResult.value = event.output
+          }
+          // Original pipeline results
+          else if (event.phase === 'classify') {
             classificationResult.value = event.output
           } else if (event.phase === 'analyze_risks') {
             riskAnalysisResult.value = event.output

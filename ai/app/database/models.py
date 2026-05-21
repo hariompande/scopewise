@@ -14,6 +14,81 @@ import uuid
 from pydantic import BaseModel, StringConstraints, field_validator
 from sqlmodel import SQLModel, Column, Field, JSON, Relationship
 
+
+# --- Resource Availability Models ---
+
+class Employee(SQLModel, table=True):
+    """Employee/team member with skills and availability tracking."""
+    __tablename__ = "employees"
+
+    id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        primary_key=True
+    )
+    name: str = Field(index=True)
+    email: str = Field(unique=True, index=True)
+    skills: list[str] = Field(sa_column=Column(JSON), default=[])
+    role: str = Field(default="")  # e.g. "Senior Developer", "Project Manager"
+    level: str = Field(default="")  # e.g. "junior", "mid", "senior", "lead"
+    available: bool = Field(default=True, index=True)
+    utilization_rate: float = Field(default=0.0)  # 0-1 current utilization
+    current_project_id: Optional[str] = Field(default=None, foreign_key="project_documents.id", index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Relationships
+    current_project: Optional["ProjectDocument"] = Relationship(back_populates="assigned_employees")
+
+
+class ProjectAssignment(SQLModel, table=True):
+    """Tracks employee assignments to projects."""
+    __tablename__ = "project_assignments"
+
+    id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        primary_key=True
+    )
+    employee_id: str = Field(foreign_key="employees.id", index=True)
+    project_id: str = Field(foreign_key="project_documents.id", index=True)
+    role_on_project: str = Field(default="")
+    allocation_percentage: float = Field(default=100.0)  # 0-100
+    priority: str = Field(default="medium")  # low, medium, high, critical
+    start_date: datetime = Field(default_factory=datetime.utcnow)
+    end_date: Optional[datetime] = Field(default=None)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ProjectDocument(SQLModel, table=True):
+    """Past project documents for RAG retrieval - firm history."""
+    __tablename__ = "project_documents"
+
+    id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        primary_key=True
+    )
+    project_name: str = Field(index=True)
+    client_name: str = Field(default="", index=True)
+    description: str = Field(default="")
+    industry: str = Field(default="", index=True)
+    project_type: str = Field(default="", index=True)  # web app, mobile, etc.
+    tech_stack: list[str] = Field(sa_column=Column(JSON), default=[])
+    team_size: int = Field(default=0)
+    duration_weeks: int = Field(default=0)
+    budget_range: str = Field(default="")
+    outcome: str = Field(default="")  # success story, lessons learned
+    challenges: list[str] = Field(sa_column=Column(JSON), default=[])
+    key_features: list[str] = Field(sa_column=Column(JSON), default=[])
+    embedding_id: Optional[str] = Field(default=None, index=True)  # ChromaDB reference
+    chroma_collection: str = Field(default="firm_projects")
+    document_status: str = Field(default="active")  # active, archived
+    completion_date: Optional[datetime] = Field(default=None)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Relationships
+    assigned_employees: list["Employee"] = Relationship(back_populates="current_project")
+
+
 StrippedName = Annotated[
     str,
     StringConstraints(strip_whitespace=True, min_length=2, max_length=120),
@@ -31,6 +106,9 @@ class ComplexityLevel(str, Enum):
 
 class PipelineStatus(str, Enum):
     pending = "pending"
+    searching_firm_history = "searching_firm_history"
+    checking_resources = "checking_resources"
+    market_research = "market_research"
     classifying = "classifying"
     paused = "paused"          # HITL breakpoint
     analyzing_risks = "analyzing_risks"
