@@ -4,6 +4,11 @@
 
     <!-- Progress Bar -->
     <div class="progress-container">
+      <div class="progress-header">
+        <button type="button" class="discovery-form__button discovery-form__button--ghost prefill-btn" @click="handlePrefillData">
+          ✨ Prefill Data
+        </button>
+      </div>
       <div class="progress-bar">
         <div
           class="progress-fill"
@@ -236,6 +241,13 @@
       </div>
 
       <!-- Navigation -->
+      <div v-if="error" class="discovery-form__error-message">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        {{ error }}
+      </div>
+
       <div class="discovery-form__actions">
         <button
           v-if="currentStep > 0"
@@ -321,7 +333,7 @@ interface Step {
 const { t } = useI18n()
 
 const discoveryStore = useDiscoveryStore()
-const { form, isSubmitting, isStreaming, isFormValid, formattedUserInput } = storeToRefs(discoveryStore)
+const { form, isSubmitting, isStreaming, isFormValid, formattedUserInput, error } = storeToRefs(discoveryStore)
 const { connect } = useAgentStream()
 
 const currentStep = ref(0)
@@ -464,6 +476,27 @@ const handleResetForm = () => {
   newFeature.value = ''
 }
 
+const handlePrefillData = () => {
+  form.value = {
+    projectType: 'saas',
+    budget: '$50k - $100k',
+    timeline: '3-4 months',
+    features: [
+      'User Authentication',
+      'Dashboard Analytics',
+      'Payment Gateway Integration',
+      'Role-based Access Control',
+      'Email Notifications'
+    ],
+    targetAudience: 'Small to medium-sized e-commerce businesses and marketing agencies looking to automate their client reporting workflows.',
+    businessGoals: 'Reduce manual reporting time by 80% and create a new recurring revenue stream through a scalable SaaS model.',
+    technicalRequirements: 'The application needs to be built with Vue.js/Nuxt on the frontend and Laravel/PostgreSQL on the backend. Must integrate with Stripe for subscriptions and SendGrid for emails.',
+    constraints: 'The MVP must be completed before the industry conference in exactly 4 months. Maximum initial budget is strictly capped at $80,000.',
+    additionalNotes: 'We want the design to be highly modern and clean, similar to Vercel or Stripe. Dark mode is an absolute must-have feature from day one.',
+  }
+  newFeature.value = ''
+}
+
 const handleSubmit = () => {
   if (isFormValid.value) {
     connect(formattedUserInput.value)
@@ -491,6 +524,18 @@ const handleSubmit = () => {
 /* Progress Bar Container */
 .progress-container {
   margin-bottom: var(--space-8);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-3);
+}
+
+.prefill-btn {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-body-xs);
+  border-radius: 8px;
 }
 
 .progress-bar {
@@ -773,11 +818,34 @@ const handleSubmit = () => {
 }
 
 /* Navigation Actions */
+.discovery-form__error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding: var(--space-4);
+  background: rgba(255, 60, 60, 0.1);
+  border: 1px solid rgba(255, 60, 60, 0.3);
+  border-radius: 12px;
+  color: #ffbaba;
+  font-family: var(--font-body);
+  font-size: var(--font-size-body-sm);
+  backdrop-filter: blur(10px);
+}
+
+.error-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  stroke: #ff6b6b;
+}
+
 .discovery-form__actions {
   display: flex;
   flex-direction: row;
   gap: var(--space-3);
-  margin-top: var(--space-8);
+  margin-top: var(--space-4);
   padding-top: var(--space-6);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }

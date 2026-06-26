@@ -68,8 +68,12 @@ class FirmHistoryRetriever:
         
         self.embeddings = OpenAIEmbeddings(
             api_key=api_key,
-            model="openai/text-embedding-3-small",  # Via OpenRouter
-            openai_api_base="https://openrouter.ai/api/v1"
+            model=settings.openai_embedding_model,  # Via OpenRouter
+            openai_api_base="https://openrouter.ai/api/v1",
+            default_headers={
+                "HTTP-Referer": "http://localhost:5173",
+                "X-Title": "ScopeWise"
+            }
         )
         
         # Initialize ChromaDB vector store
