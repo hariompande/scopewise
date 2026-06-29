@@ -1,0 +1,80 @@
+name: scopewise
+region: nyc
+services:
+  # 1. AI Service (Python FastAPI)
+  - name: scopewise-ai
+    github:
+      branch: main
+      deploy_on_push: true
+      # IMPORTANT: Change this to your actual GitHub username/repo
+      repo: hariompande/scopewise
+    source_dir: ai
+    environment_slug: python
+    build_command: pip install -U uv && uv pip install --system -e .
+    run_command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    envs:
+      - key: PYTHON_VERSION
+        value: "3.13.0"
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+  # 2. Laravel Backend
+  - name: scopewise-backend
+    github:
+      branch: main
+      deploy_on_push: true
+      # IMPORTANT: Change this to your actual GitHub username/repo
+      repo: your-username/ScopeWise
+    source_dir: backend
+    dockerfile_path: Dockerfile
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    envs:
+      - key: APP_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: APP_ENV
+        value: "production"
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        value: ${APP_URL}
+      - key: PYTHON_SERVICE_URL
+        value: ${scopewise-ai.INTERNAL_URL}
+      - key: DB_CONNECTION
+        value: "sqlite"
+
+# 3. Vue Frontend
+static_sites:
+  - name: scopewise-frontend
+    github:
+      branch: main
+      deploy_on_push: true
+      # IMPORTANT: Change this to your actual GitHub username/repo
+      repo: your-username/ScopeWise
+    source_dir: frontend
+    environment_slug: node-js
+    build_command: npm install && npm run build
+    output_dir: dist
+    envs:
+      - key: VITE_LARAVEL_API_URL
+        value: ${APP_URL}/api
+
+# 4. Routing Rules (Serve everything on the same domain)
+ingress:
+  rules:
+    - component:
+        name: scopewise-frontend
+      match:
+        path:
+          prefix: /
+    - component:
+        name: scopewise-backend
+      match:
+        path:
+          prefix: /api
