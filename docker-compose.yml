@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # 1. Vue Frontend + Nginx
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    environment:
+      - VITE_LARAVEL_API_URL=/api
+
+  # 2. Laravel Backend
+  backend:
+    build:
+      context: ./backend
+    expose:
+      - "8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://localhost
+      - PYTHON_SERVICE_URL=http://ai:8080
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=scopewise
+      - DB_USERNAME=root
+      # DB_PASSWORD is automatically loaded from the .env file
+    env_file:
+      - .env
+
+  # 3. MySQL Database
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=scopewise
+      # MYSQL_ROOT_PASSWORD is automatically loaded from the .env file
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 4. Python AI Service
+  ai:
+    build:
+      context: ./ai
+    expose:
+      - "8080"
+    restart: unless-stopped
+    environment:
+      - PYTHON_VERSION=3.13.0
+    env_file:
+      - .env
+
+networks:
+  default:
+    name: scopewise-network
+
+volumes:
+  mysql_data:
