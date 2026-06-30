@@ -27,8 +27,7 @@ services:
     github:
       branch: main
       deploy_on_push: true
-      # IMPORTANT: Change this to your actual GitHub username/repo
-      repo: your-username/ScopeWise
+      repo: hariompande/scopewise
     source_dir: backend
     dockerfile_path: Dockerfile
     http_port: 80
@@ -56,7 +55,7 @@ static_sites:
       branch: main
       deploy_on_push: true
       # IMPORTANT: Change this to your actual GitHub username/repo
-      repo: your-username/ScopeWise
+      repo: hariompande/scopewise
     source_dir: frontend
     environment_slug: node-js
     build_command: npm install && npm run build
