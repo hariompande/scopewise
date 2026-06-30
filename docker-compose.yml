@@ -27,26 +27,27 @@ services:
       - APP_DEBUG=false
       - APP_URL=http://localhost
       - PYTHON_SERVICE_URL=http://ai:8080
-      - DB_CONNECTION=mysql
+      - DB_CONNECTION=pgsql
       - DB_HOST=db
-      - DB_PORT=3306
+      - DB_PORT=5432
       - DB_DATABASE=scopewise
-      - DB_USERNAME=root
+      - DB_USERNAME=scopewise
       # DB_PASSWORD is automatically loaded from the .env file
     env_file:
       - .env
 
-  # 3. MySQL Database
+  # 3. PostgreSQL Database (Used by both Laravel and AI)
   db:
-    image: mysql:8.0
+    image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=scopewise
-      # MYSQL_ROOT_PASSWORD is automatically loaded from the .env file
+      - POSTGRES_DB=scopewise
+      - POSTGRES_USER=scopewise
+      # POSTGRES_PASSWORD is automatically loaded from the .env file
     env_file:
       - .env
     volumes:
-      - mysql_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
 
   # 4. Python AI Service
   ai:
@@ -54,9 +55,12 @@ services:
       context: ./ai
     expose:
       - "8080"
+    depends_on:
+      - db
     restart: unless-stopped
     environment:
       - PYTHON_VERSION=3.13.0
+      - DATABASE_URL=postgresql+psycopg://scopewise:${DB_PASSWORD}@db:5432/scopewise
     env_file:
       - .env
 
@@ -65,4 +69,4 @@ networks:
     name: scopewise-network
 
 volumes:
-  mysql_data:
+  pg_data:
