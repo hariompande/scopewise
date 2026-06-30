@@ -9,10 +9,8 @@ ENV WEB_DOCUMENT_ROOT=/var/www/html/public
 # Copy application files
 COPY . /var/www/html
 
-# Ensure proper ownership of Laravel writable directories
-RUN chown -R www-data:www-data /var/www/html/storage \
-    && chown -R www-data:www-data /var/www/html/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html/database
+# Ensure proper ownership of all Laravel files so Composer can run
+RUN chown -R www-data:www-data /var/www/html
 
 # Switch back to the standard non-root user
 USER www-data
